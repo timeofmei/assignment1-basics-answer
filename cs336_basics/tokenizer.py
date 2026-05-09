@@ -3,7 +3,7 @@ import json
 import ast
 import regex as re
 import heapq
-from functools import cache
+from functools import lru_cache
 
 PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 PAT_BYTE = r"""(b(?:'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*")) (b(?:'[^'\\]*(?:\\.[^'\\]*)*'|"[^"\\]*(?:\\.[^"\\]*)*"))"""
@@ -69,7 +69,7 @@ class Tokenizer:
                     new_result.append(byte_tuple)
         return new_result
 
-    @cache
+    @lru_cache(maxsize=3000)
     def _parse(self, result: tuple[bytes]) -> list[int]:
         pair_priority = []
         heapq.heapify(pair_priority)
