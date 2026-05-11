@@ -5,6 +5,7 @@ from torch import Tensor
 
 
 class Embedding(nn.Module):
+
     def __init__(self, num_embeddings: int, embedding_dim: int, device=None, dtype=None):
         super().__init__()
         self.num_embeddings = num_embeddings
