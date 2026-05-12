@@ -8,7 +8,7 @@ from torch import Tensor
 
 class RoPE(nn.Module):
 
-    def __init__(self, theta: float, d_k: int, max_seq_len: int):
+    def __init__(self, theta: float, d_k: int, max_seq_len: int, device: torch.device | None = None):
         super().__init__()
         self.theta = theta
         self.d_k = d_k
@@ -19,7 +19,7 @@ class RoPE(nn.Module):
             for k in range(1, int(d_k / 2 + 1)):
                 R_i.append(self._get_rik(i, k))
             R.append(torch.stack(R_i))
-        R = torch.stack(R)
+        R = torch.stack(R).to(device=device)
         self.register_buffer("R", R)
 
     def _get_rik(self, i: int, k: int):
@@ -38,9 +38,6 @@ class RotaryPositionalEmbedding(nn.Module):
         self.max_seq_len = max_seq_len
         self.device = device
         self.rope = rope
-
-    def load_weights(self, weights: dict[str, Tensor]):
-        self.load_state_dict(weights, strict=False)
 
     def forward(self, in_query_or_key: Float[Tensor, " ... sequence_length d_k"],
                 token_positions: Int[Tensor, " ... sequence_length"]) -> torch.Tensor:
