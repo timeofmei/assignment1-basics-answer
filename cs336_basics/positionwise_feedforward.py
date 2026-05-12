@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 from einops import einsum
-from jaxtyping import Float
 from torch import Tensor
 
 
