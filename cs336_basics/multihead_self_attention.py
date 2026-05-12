@@ -39,11 +39,11 @@ class MultiHeadSelfAttention(nn.Module):
         W_QKV_stack = torch.stack([W_Q_multi, W_K_multi, W_V_multi], dim=0)
         QKV_stack = einsum(W_QKV_stack, x, "triple h d_k d_model, ... sequence_length d_model -> ... triple h sequence_length d_k")
         Q_multi, K_multi, V_multi = rearrange(QKV_stack, "... triple h sequence_length d_k -> triple ... h sequence_length d_k")
-        seq_indexes = torch.arange(0, seq_length)
+        seq_indexes = torch.arange(0, seq_length, device=self.device)
         if self.rope_layer is not None:
             Q_multi = self.rope_layer(Q_multi, seq_indexes)
             K_multi = self.rope_layer(K_multi, seq_indexes)
-        single_mask = ~torch.ones((seq_length, seq_length)).triu(1).to(torch.bool)
+        single_mask = ~torch.ones((seq_length, seq_length), device=self.device).triu(1).to(torch.bool)
         attn_val = scaled_dot_product_attention(Q_multi, K_multi, V_multi, single_mask)
         result = einsum(W_O_multi, attn_val, "d_model h d_v, ... h sequence_length d_v ->  ... sequence_length d_model")
         return result
