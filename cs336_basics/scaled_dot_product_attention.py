@@ -3,7 +3,7 @@ import numpy as np
 from einops import einsum
 from jaxtyping import Float, Bool
 from torch import Tensor
-from softmax import softmax
+from .softmax import softmax
 
 
 def scaled_dot_product_attention(Q: Float[Tensor, " ... queries d_k"], K: Float[Tensor, " ... keys d_k"], V: Float[Tensor, " ... keys d_v"], mask: Bool[Tensor, " ... queries keys"] | None = None) -> Float[Tensor, " ... queries d_v"]:

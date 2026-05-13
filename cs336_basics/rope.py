@@ -20,7 +20,7 @@ class RoPE(nn.Module):
                 R_i.append(self._get_rik(i, k))
             R.append(torch.stack(R_i))
         R = torch.stack(R).to(device=device)
-        self.register_buffer("R", R)
+        self.register_buffer("R", R, persistent=False)
 
     def _get_rik(self, i: int, k: int):
         angle = i / np.pow(self.theta, (2 * k - 2) / self.d_k)
@@ -41,7 +41,7 @@ class RotaryPositionalEmbedding(nn.Module):
 
     def forward(self, in_query_or_key: Float[Tensor, " ... sequence_length d_k"],
                 token_positions: Int[Tensor, " ... sequence_length"]) -> torch.Tensor:
-        R = self.rope.R[token_positions]
+        R = self.rope.get_buffer("R")[token_positions]
         q = rearrange(in_query_or_key, " ... sequence_length (k pair) ->  ... sequence_length k pair", pair=2)
         x_2k = q[..., 0] * R[..., 1] - q[..., 1] * R[..., 0]
         x_2kp1 = q[..., 0] * R[..., 0] + q[..., 1] * R[..., 1]

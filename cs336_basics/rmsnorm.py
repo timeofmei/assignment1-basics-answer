@@ -13,15 +13,15 @@ class RMSNorm(nn.Module):
         self.device = device
         self.dtype = dtype
 
-        g = torch.zeros(d_model, dtype=dtype, device=device)
-        self.g = nn.Parameter(g, requires_grad=True)
+        weight = torch.zeros(d_model, dtype=dtype, device=device)
+        self.weight = nn.Parameter(weight, requires_grad=True)
 
-    def load_weights(self, weights: Float[Tensor, " d_model"]):
-        self.load_state_dict({"g": weights}, strict=False)
+    def load_weight(self, weight: Float[Tensor, " d_model"]):
+        self.load_state_dict({"weight": weight}, strict=False)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
         in_dtype = x.dtype
         x = x.to(torch.float32)
         rms = torch.sqrt(self.eps + x.pow(2).sum(dim=-1, keepdim=True) / self.d_model)
-        result = x / rms * self.g
+        result = x / rms * self.weight
         return result.to(in_dtype)

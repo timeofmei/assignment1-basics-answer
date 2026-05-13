@@ -31,7 +31,7 @@ def run_linear(
 
     from cs336_basics.linear import Linear
     layer = Linear(d_in, d_out)
-    layer.load_weights(weights)
+    layer.load_weight(weights)
     return layer(in_features)
 
 
@@ -56,7 +56,7 @@ def run_embedding(
 
     from cs336_basics.embedding import Embedding
     layer = Embedding(vocab_size, d_model)
-    layer.load_weights(weights)
+    layer.load_weight(weights)
     return layer(token_ids)
 
 
@@ -91,7 +91,7 @@ def run_swiglu(
     # swiglu.w3.weight.data = w3_weight
     from cs336_basics.positionwise_feedforward import SwiGLU
     swiglu = SwiGLU(d_model, d_ff)
-    swiglu.load_weights({"W1": w1_weight, "W2": w2_weight, "W3": w3_weight})
+    swiglu.load_weight(w1_weight, w2_weight, w3_weight)
     return swiglu(in_features)
 
 
@@ -150,7 +150,7 @@ def run_multihead_self_attention(
     """
     from cs336_basics.multihead_self_attention import MultiHeadSelfAttention
     layer = MultiHeadSelfAttention(d_model, num_heads)
-    layer.load_weights({"W_Q": q_proj_weight, "W_K": k_proj_weight, "W_V": v_proj_weight, "W_O": o_proj_weight})
+    layer.load_weight(q_proj_weight, k_proj_weight, v_proj_weight, o_proj_weight)
     return layer(in_features)
 
 
@@ -197,8 +197,8 @@ def run_multihead_self_attention_with_rope(
     rope = RoPE(theta, d_k, max_seq_len)
     rope_layer = RotaryPositionalEmbedding(theta, d_k, max_seq_len, rope)
     layer = MultiHeadSelfAttention(d_model, num_heads, rope_layer)
-    layer.load_weights({"W_Q": q_proj_weight, "W_K": k_proj_weight, "W_V": v_proj_weight, "W_O": o_proj_weight})
-    return layer(in_features)
+    layer.load_weight(q_proj_weight, k_proj_weight, v_proj_weight, o_proj_weight)
+    return layer(in_features, token_positions)
 
 
 def run_rope(
@@ -296,7 +296,10 @@ def run_transformer_block(
         Float[Tensor, "batch sequence_length d_model"] Tensor with the output of
         running the Transformer block on the input features while using RoPE.
     """
-    raise NotImplementedError
+    from cs336_basics.transformer_block import TransformerBlock
+    transformer_block = TransformerBlock(d_model, num_heads, d_ff, max_seq_len, theta)
+    transformer_block.load_weight(weights)
+    return transformer_block(in_features)
 
 
 def run_transformer_lm(
@@ -403,7 +406,7 @@ def run_rmsnorm(
     """
     from cs336_basics.rmsnorm import RMSNorm
     rmsnorm = RMSNorm(d_model, eps)
-    rmsnorm.load_weights(weights)
+    rmsnorm.load_weight(weights)
     return rmsnorm(in_features)
 
 
@@ -418,7 +421,8 @@ def run_silu(in_features: Float[Tensor, " ..."]) -> Float[Tensor, " ..."]:
         Float[Tensor,"..."]: of with the same shape as `in_features` with the output of applying
         SiLU to each element.
     """
-    raise NotImplementedError
+    from cs336_basics.positionwise_feedforward import silu
+    return silu(in_features)
 
 
 def run_get_batch(

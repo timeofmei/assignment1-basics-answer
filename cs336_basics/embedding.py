@@ -19,8 +19,8 @@ class Embedding(nn.Module):
         nn.init.trunc_normal_(emb, mean=mean, std=std, a=-3, b=3)
         self.emb = nn.Parameter(emb, requires_grad=True)
 
-    def load_weights(self, weights: Float[Tensor, " vocab_size d_model"]):
-        self.load_state_dict({"emb": weights}, strict=False)
+    def load_weight(self, weight: Float[Tensor, " vocab_size d_model"]):
+        self.load_state_dict({"emb": weight}, strict=False)
 
     def forward(self, token_ids: torch.Tensor) -> torch.Tensor:
         return self.emb[token_ids]
