@@ -1,11 +1,8 @@
 import torch
 import torch.nn as nn
-import numpy as np
-from einops import einsum, rearrange, repeat
 from jaxtyping import Float
 from torch import Tensor
 from .rope import RoPE, RotaryPositionalEmbedding
-from .scaled_dot_product_attention import scaled_dot_product_attention
 from .multihead_self_attention import MultiHeadSelfAttention
 from .positionwise_feedforward import SwiGLU
 from .rmsnorm import RMSNorm

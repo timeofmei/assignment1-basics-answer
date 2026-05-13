@@ -13,14 +13,14 @@ class Embedding(nn.Module):
         self.device = device
         self.dtype = dtype
 
-        emb = torch.zeros((num_embeddings, embedding_dim), dtype=dtype, device=device)
+        weight = torch.zeros((num_embeddings, embedding_dim), dtype=dtype, device=device)
         mean = 0
         std = 1
-        nn.init.trunc_normal_(emb, mean=mean, std=std, a=-3, b=3)
-        self.emb = nn.Parameter(emb, requires_grad=True)
+        nn.init.trunc_normal_(weight, mean=mean, std=std, a=-3, b=3)
+        self.weight = nn.Parameter(weight, requires_grad=True)
 
     def load_weight(self, weight: Float[Tensor, " vocab_size d_model"]):
-        self.load_state_dict({"emb": weight}, strict=False)
+        self.load_state_dict({"weight": weight}, strict=False)
 
     def forward(self, token_ids: torch.Tensor) -> torch.Tensor:
-        return self.emb[token_ids]
+        return self.weight[token_ids]
