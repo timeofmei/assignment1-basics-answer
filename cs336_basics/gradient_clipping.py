@@ -3,11 +3,11 @@ import torch
 
 def gradient_clipping(parameters: Iterable[torch.nn.Parameter], max_l2_norm: float) -> None:
     eps = 1e-6
-    grads = []
+    l2_norm = 0
     for p in parameters:
         if p.grad is not None:
-            grads.append(p.grad.data)
-    l2_norm = torch.cat(grads).norm()
+            l2_norm += p.grad.data.pow(2).sum()
+    l2_norm = l2_norm ** 0.5
     if l2_norm >= max_l2_norm:
         for p in parameters:
             if p.grad is None:
