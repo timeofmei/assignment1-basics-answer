@@ -2,12 +2,12 @@ import os
 import regex as re
 from collections import Counter
 from multiprocessing import Pool, cpu_count
-from util import find_chunk_boundaries
+from .util import find_chunk_boundaries
 
 PAT = r"""'(?:[sdmt]|ll|ve|re)| ?\p{L}+| ?\p{N}+| ?[^\s\p{L}\p{N}]+|\s+(?!\S)|\s+"""
 
 
-def bpe(input_path: str | os.PathLike, vocab_size: int, special_tokens: list[str], multi: bool = True):
+def bpe(input_path: str | os.PathLike, vocab_size: int, special_tokens: list[str], multi: bool = False):
     with open(input_path, "rb") as f:
         num_processes = cpu_count()
         boundaries = find_chunk_boundaries(f, 60, b"<|endoftext|>")

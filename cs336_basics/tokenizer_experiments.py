@@ -1,6 +1,5 @@
 from tokenizer import Tokenizer
 import numpy as np
-import pickle
 from util import find_chunk_boundaries
 from multiprocessing import Pool, cpu_count
 
@@ -37,8 +36,7 @@ def experiment_d(multi: bool = True, chunk_store: bool = True):
                             multi_func = pool.imap
                         for chunk_index, chunk_token_ids in multi_func(chunk_worker, chunk_worker_args):
                             if chunk_store:
-                                with open(token_ids_path + f"-{chunk_index}.pkl", "wb") as f_chunk_token:
-                                    pickle.dump(chunk_token_ids, f_chunk_token)
+                                np.save(token_ids_path + f"-{chunk_index}", chunk_token_ids)
                             else:
                                 token_ids = np.concatenate((token_ids, chunk_token_ids))
                 else:
@@ -46,8 +44,7 @@ def experiment_d(multi: bool = True, chunk_store: bool = True):
                         _, chunk_token_ids = chunk_worker(chunk_worker_arg)
                         token_ids = np.concatenate((token_ids, chunk_token_ids))
             if not chunk_store:
-                with open(token_ids_path + ".pkl", "wb") as f_token:
-                    pickle.dump(token_ids, f_token)
+                np.save(token_ids_path, token_ids)
 
 
 def chunk_worker(args):
